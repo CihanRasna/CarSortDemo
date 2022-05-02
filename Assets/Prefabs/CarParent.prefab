@@ -168,6 +168,9 @@ MonoBehaviour:
   tick: {fileID: 6556556778601326540}
   splineFollower: {fileID: 7144123514063951249}
   reached: 0
+  maxSpeed: 200
+  maxSpeedReachTime: 1
+  easeType: 4
 --- !u!114 &7144123514063951249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +281,7 @@ MonoBehaviour:
   autoStartPosition: 0
   _follow: 0
   preserveUniformSpeedWithOffset: 0
-  _followSpeed: 50
+  _followSpeed: 0
   _followDuration: 1
   _startPosition: 0
   _speedModifier:

@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Cinemachine;
 using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using Dreamteck.Splines;
 using UnityEngine;
 using UnityEngine.AI;
 using Debug = UnityEngine.Debug;
 
+[HelpURL("https://easings.net/")]
 public class Car : MonoBehaviour
 {
     public enum CarType
@@ -16,6 +18,7 @@ public class Car : MonoBehaviour
         leftLine,
         rightLine
     }
+
     public CarType carType;
     public Renderer myRenderer;
     public ParkingLot _parkingLot;
@@ -25,8 +28,14 @@ public class Car : MonoBehaviour
     [SerializeField] private SplineFollower splineFollower;
     public bool reached = false;
 
+    [Header("Speed Modifiers")] [SerializeField]
+    private float maxSpeed = 200f;
+
+    [SerializeField] private float maxSpeedReachTime = 1f;
+
+    [SerializeField] private Ease easeType;
     public void Start()
-    {   
+    {
         var mat = GetComponentInParent<CarManager>().CarMaterial(this);
         myRenderer.material = mat;
         splineFollower.spline = gameObject.AddComponent<SplineComputer>();
@@ -51,13 +60,13 @@ public class Car : MonoBehaviour
             var pos = new Vector3(agent.path.corners[i].x, transform.position.y, agent.path.corners[i].z);
             pathPoints.Add(pos);
             var splinePoint = new SplinePoint(pos);
-            splineFollower.spline.SetPoint(i,splinePoint);
+            splineFollower.spline.SetPoint(i, splinePoint);
         }
-        
+
         if (agent.pathStatus == NavMeshPathStatus.PathPartial)
         {
             splineFollower.follow = false;
-            transform.DOScale(Vector3.one * 1.3f, 0.2f).SetLoops(-1,LoopType.Yoyo);
+            transform.DOScale(Vector3.one * 1.3f, 0.2f).SetLoops(-1, LoopType.Yoyo);
             _parkingLot.transform.DOScale(_parkingLot.transform.localScale * 1.1f, 0.2f).SetLoops(-1, LoopType.Yoyo);
             _parkingLot.GetComponent<SpriteRenderer>().DOColor(Color.red, 0.2f).SetLoops(-1, LoopType.Yoyo);
             SessionManager.Instance.State = SessionManager.GameState.Failed;
@@ -67,6 +76,9 @@ public class Car : MonoBehaviour
         agent.enabled = false;
         splineFollower.follow = true;
         _parkingLot.NavMeshObstacle.enabled = true;
+
+        DOTween.To(() => splineFollower.followSpeed, x => splineFollower.followSpeed = x, maxSpeed, maxSpeedReachTime)
+            .SetEase(easeType);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -85,6 +97,9 @@ public class Car : MonoBehaviour
     {
         reached = true;
         tick.gameObject.SetActive(true);
+        var camera = Camera.main;
+        tick.transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward,
+            camera.transform.rotation * Vector3.up);
         transform.parent = _parkingLot.transform;
         var rot = transform.localRotation.eulerAngles;
         Destroy(splineFollower.spline);
