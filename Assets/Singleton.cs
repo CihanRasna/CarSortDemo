@@ -27,7 +27,7 @@ public abstract class Singleton<T> : Singleton where T : MonoBehaviour
         }
     }
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         instance = this as T;
         DontDestroyOnLoad(this);

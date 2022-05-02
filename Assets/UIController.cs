@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
@@ -6,15 +8,26 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameObject succeedPanel;
     [SerializeField] private GameObject failedPanel;
 
-    void Start()
+    [SerializeField] private Button leftButton;
+    [SerializeField] private Button rightButton;
+    
+    
+
+    private void Awake()
     {
         SessionManager.Instance.currentStatus.AddListener(StatusListener);
+    }
+    public void IsLeftButtonTapped(bool isTrue)
+    {
+        var level = SessionManager.Instance.currentLevel;
+        level.MovementHandler.ButtonBehaviour(isTrue);
     }
 
     private void StatusListener(SessionManager.GameState state)
     {
         if (state == SessionManager.GameState.Started)
         {
+            Debug.Log("Started");
             succeedPanel.SetActive(false);
             failedPanel.SetActive(false);
         }

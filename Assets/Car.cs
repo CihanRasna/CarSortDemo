@@ -22,7 +22,7 @@ public class Car : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     private List<Vector3> pathPoints = new List<Vector3>();
     [SerializeField] private SplineFollower splineFollower;
-    private bool _reached;
+    public bool reached = false;
 
     public void Start()
     {   
@@ -56,9 +56,9 @@ public class Car : MonoBehaviour
         if (agent.pathStatus == NavMeshPathStatus.PathPartial)
         {
             splineFollower.follow = false;
-            transform.DOScale(Vector3.one * 1.3f, 1f).SetLoops(-1,LoopType.Yoyo);
-            //Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.LookAt = transform;
-            Debug.LogError(gameObject.name +"'S PATH CAN NOT REACHABLE");
+            transform.DOScale(Vector3.one * 1.3f, 0.2f).SetLoops(-1,LoopType.Yoyo);
+            _parkingLot.transform.DOScale(_parkingLot.transform.localScale * 1.1f, 0.2f).SetLoops(-1, LoopType.Yoyo);
+            _parkingLot.GetComponent<SpriteRenderer>().DOColor(Color.red, 0.2f).SetLoops(-1, LoopType.Yoyo);
             SessionManager.Instance.State = SessionManager.GameState.Failed;
             yield break;
         }
@@ -66,23 +66,34 @@ public class Car : MonoBehaviour
         agent.enabled = false;
         splineFollower.follow = true;
         _parkingLot.NavMeshObstacle.enabled = true;
-        
-        yield return null;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!reached)
+        {
+            var otherCar = other.GetComponent<Car>();
+            if (!otherCar.reached && !reached)
+            {
+                Debug.Log("HIT");
+            }
+        }
     }
 
     public void OnReached()
     {
+        reached = true;
         transform.parent = _parkingLot.transform;
         var rot = transform.localRotation.eulerAngles;
         Destroy(splineFollower.spline);
         Destroy(splineFollower);
+        splineFollower = null;
         transform.DOLocalRotate(new Vector3(90, rot.y, rot.z), 0.3f);
-        _reached = true;
     }
 
     private void OnDrawGizmos()
     {
-        if (!_reached)
+        if (!reached)
         {
             var agentPath = pathPoints;
             foreach (var t in agentPath)
