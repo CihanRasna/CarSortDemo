@@ -18,9 +18,9 @@ public class CarManager : MonoBehaviour
         return car.carType == Car.CarType.leftLine ? leftCarMaterial : rightCarMaterial;
     }
 
-    public void MoveSelectedCar(int a, out Car car)
+    public void MoveSelectedCar(bool isLeftButtonTapped, out Car car)
     {
-        if (a == 1)
+        if (isLeftButtonTapped)
         {
             car = leftLineCars[0];
             leftLineCars.RemoveAt(0);

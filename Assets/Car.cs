@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using DG.Tweening;
 using Dreamteck.Splines;
 using UnityEngine;
 using UnityEngine.AI;
+using Debug = UnityEngine.Debug;
 
 public class Car : MonoBehaviour
 {
@@ -13,11 +16,12 @@ public class Car : MonoBehaviour
         rightLine
     }
     public CarType carType;
-    
     public Renderer myRenderer;
+    public ParkingLot _parkingLot;
     [SerializeField] private NavMeshAgent agent;
     public List<Vector3> pathPoints;
     [SerializeField] private SplineFollower splineFollower;
+    private bool testMe;
 
     public void Start()
     {   
@@ -28,9 +32,21 @@ public class Car : MonoBehaviour
         //splineFollower.spline.SetPoint(0, new SplinePoint(transform.position));
     }
 
-    public void StartMovement(Vector3 to)
+    private void Update()
     {
-        StartCoroutine(SetPath(to));
+        if (testMe) return;
+
+        if (agent.pathStatus == NavMeshPathStatus.PathPartial)
+        {
+            Debug.LogError(gameObject.name +"'S PATH CAN NOT REACHABLE");
+        }
+    }
+
+    public void StartMovement(ParkingLot to)
+    {
+        _parkingLot = to;
+        var pos = to.transform.position;
+        StartCoroutine(SetPath(pos));
     }
 
     IEnumerator SetPath(Vector3 to)
@@ -46,9 +62,20 @@ public class Car : MonoBehaviour
             splineFollower.spline.SetPoint(i,splinePoint);
         }
 
-        //agent.enabled = false;
-        //splineFollower.follow = true;
+        agent.enabled = false;
+        splineFollower.follow = true;
+        _parkingLot.NavMeshObstacle.enabled = true;
         yield return null;
+    }
+
+    public void OnReached()
+    {
+        transform.parent = _parkingLot.transform;
+        var rot = transform.localRotation.eulerAngles;
+        Destroy(splineFollower.spline);
+        Destroy(splineFollower);
+        transform.DOLocalRotate(new Vector3(90, rot.y, rot.z), 0.3f);
+        testMe = true;
     }
 
     private void OnDrawGizmos()

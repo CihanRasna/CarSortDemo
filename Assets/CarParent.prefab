@@ -101,7 +101,6 @@ GameObject:
   - component: {fileID: 7144123514063951252}
   - component: {fileID: 7144123514063951250}
   - component: {fileID: 7144123514063951249}
-  - component: {fileID: 5980563788118992177}
   m_Layer: 0
   m_Name: CarParent
   m_TagString: Untagged
@@ -161,6 +160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carType: 0
   myRenderer: {fileID: 3383575921089591560}
+  _parkingLot: {fileID: 0}
   agent: {fileID: 7144123514063951252}
   pathPoints: []
   splineFollower: {fileID: 7144123514063951249}
@@ -274,7 +274,7 @@ MonoBehaviour:
   autoStartPosition: 0
   _follow: 0
   preserveUniformSpeedWithOffset: 0
-  _followSpeed: 300
+  _followSpeed: 50
   _followDuration: 1
   _startPosition: 0
   _speedModifier:
@@ -283,10 +283,10 @@ MonoBehaviour:
   _unityOnEndReached:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5980563788118992177}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
+      - m_Target: {fileID: 7144123514063951250}
+        m_TargetAssemblyTypeName: Car, Assembly-CSharp
+        m_MethodName: OnReached
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -298,19 +298,3 @@ MonoBehaviour:
   _unityOnBeginningReached:
     m_PersistentCalls:
       m_Calls: []
---- !u!208 &5980563788118992177
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7144123514063951253}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 5, y: 5, z: 7.5}
-  m_MoveThreshold: 0.1
-  m_Carve: 0
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 2, z: 0}
-  m_TimeToStationary: 0.5

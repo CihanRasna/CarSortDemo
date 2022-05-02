@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class LotHandler : MonoBehaviour
 {
@@ -26,16 +27,16 @@ public class LotHandler : MonoBehaviour
         }
     }
 
-    public void LotCleaner(int a, out Vector3 parkingLot)
+    public void LotSelector(bool isLeftButtonTapped, out ParkingLot parkingLot)
     {
-        if (a == 1)
+        if (isLeftButtonTapped)
         {
-            parkingLot = leftLineParks[0].transform.position;
+            parkingLot = leftLineParks[0];
             leftLineParks.RemoveAt(0);
         }
         else
         {
-            parkingLot = rightLineParks[0].transform.position;
+            parkingLot = rightLineParks[0];
             rightLineParks.RemoveAt(0);
         }
     }
