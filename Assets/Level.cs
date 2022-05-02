@@ -4,15 +4,7 @@ using UnityEngine;
 
 public class Level : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public MovementHandler MovementHandler;
+    public LotHandler LotHandler;
+    public CarManager CarManager;
 }
