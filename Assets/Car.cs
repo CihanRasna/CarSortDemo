@@ -89,6 +89,7 @@ public class Car : MonoBehaviour
         Destroy(splineFollower);
         splineFollower = null;
         transform.DOLocalRotate(new Vector3(90, rot.y, rot.z), 0.3f);
+        SessionManager.Instance.currentLevel.CheckIfLevelFinished();
     }
 
     private void OnDrawGizmos()
