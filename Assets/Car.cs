@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Cinemachine;
 using DG.Tweening;
 using Dreamteck.Splines;
 using UnityEngine;
@@ -19,9 +20,9 @@ public class Car : MonoBehaviour
     public Renderer myRenderer;
     public ParkingLot _parkingLot;
     [SerializeField] private NavMeshAgent agent;
-    public List<Vector3> pathPoints;
+    private List<Vector3> pathPoints = new List<Vector3>();
     [SerializeField] private SplineFollower splineFollower;
-    private bool testMe;
+    private bool _reached;
 
     public void Start()
     {   
@@ -30,16 +31,6 @@ public class Car : MonoBehaviour
         splineFollower.spline = gameObject.AddComponent<SplineComputer>();
         splineFollower.spline.space = SplineComputer.Space.World;
         //splineFollower.spline.SetPoint(0, new SplinePoint(transform.position));
-    }
-
-    private void Update()
-    {
-        if (testMe) return;
-
-        if (agent.pathStatus == NavMeshPathStatus.PathPartial)
-        {
-            Debug.LogError(gameObject.name +"'S PATH CAN NOT REACHABLE");
-        }
     }
 
     public void StartMovement(ParkingLot to)
@@ -61,10 +52,21 @@ public class Car : MonoBehaviour
             var splinePoint = new SplinePoint(pos);
             splineFollower.spline.SetPoint(i,splinePoint);
         }
+        
+        if (agent.pathStatus == NavMeshPathStatus.PathPartial)
+        {
+            splineFollower.follow = false;
+            transform.DOScale(Vector3.one * 1.3f, 1f).SetLoops(-1,LoopType.Yoyo);
+            //Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera.LookAt = transform;
+            Debug.LogError(gameObject.name +"'S PATH CAN NOT REACHABLE");
+            SessionManager.Instance.State = SessionManager.GameState.Failed;
+            yield break;
+        }
 
         agent.enabled = false;
         splineFollower.follow = true;
         _parkingLot.NavMeshObstacle.enabled = true;
+        
         yield return null;
     }
 
@@ -75,16 +77,19 @@ public class Car : MonoBehaviour
         Destroy(splineFollower.spline);
         Destroy(splineFollower);
         transform.DOLocalRotate(new Vector3(90, rot.y, rot.z), 0.3f);
-        testMe = true;
+        _reached = true;
     }
 
     private void OnDrawGizmos()
     {
-        var agentPath = pathPoints;
-        foreach (var t in agentPath)
+        if (!_reached)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawCube(t, Vector3.one * 2f);
+            var agentPath = pathPoints;
+            foreach (var t in agentPath)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(t, 2f);
+            }
         }
     }
 }

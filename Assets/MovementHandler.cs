@@ -18,6 +18,14 @@ public class MovementHandler : MonoBehaviour
 
     public void ButtonBehaviour(bool isLeftButtonTapped)
     {
+        lotHandler.LotSelector(isLeftButtonTapped, out var pos);
+        carManager.MoveSelectedCar(isLeftButtonTapped, out var car);
+        if (pos == null || car == null)
+        {
+            Debug.Log("CAN'T PARK");
+            SessionManager.Instance.State = SessionManager.GameState.Failed;
+            return;
+        }
         if (isLeftButtonTapped)
         {
             if (!leftSideValid) return;
@@ -36,9 +44,6 @@ public class MovementHandler : MonoBehaviour
                 .OnComplete((() => rightSideValid = true));
             rightButton.DOLocalMoveY(-5, 0.3f).SetLoops(2, LoopType.Yoyo);
         }
-
-        lotHandler.LotSelector(isLeftButtonTapped, out var pos);
-        carManager.MoveSelectedCar(isLeftButtonTapped, out var car);
         car.StartMovement(pos);
     }
 }

@@ -29,15 +29,19 @@ public class LotHandler : MonoBehaviour
 
     public void LotSelector(bool isLeftButtonTapped, out ParkingLot parkingLot)
     {
-        if (isLeftButtonTapped)
+        if (isLeftButtonTapped && leftLineParks.Count > 0)
         {
             parkingLot = leftLineParks[0];
             leftLineParks.RemoveAt(0);
         }
-        else
+        else if (rightLineParks.Count > 0)
         {
             parkingLot = rightLineParks[0];
             rightLineParks.RemoveAt(0);
+        }
+        else
+        {
+            parkingLot = null;
         }
     }
 }

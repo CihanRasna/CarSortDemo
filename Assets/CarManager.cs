@@ -20,15 +20,19 @@ public class CarManager : MonoBehaviour
 
     public void MoveSelectedCar(bool isLeftButtonTapped, out Car car)
     {
-        if (isLeftButtonTapped)
+        if (isLeftButtonTapped && leftLineCars.Count > 0)
         {
             car = leftLineCars[0];
             leftLineCars.RemoveAt(0);
         }
-        else
+        else if (rightLineCars.Count > 0)
         {
             car = rightLineCars[0];
             rightLineCars.RemoveAt(0);
+        }
+        else
+        {
+            car = null;
         }
     }
 }
