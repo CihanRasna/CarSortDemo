@@ -20,6 +20,7 @@ public class Car : MonoBehaviour
     public Renderer myRenderer;
     public ParkingLot _parkingLot;
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private GameObject tick;
     private List<Vector3> pathPoints = new List<Vector3>();
     [SerializeField] private SplineFollower splineFollower;
     public bool reached = false;
@@ -75,7 +76,7 @@ public class Car : MonoBehaviour
             var otherCar = other.GetComponent<Car>();
             if (!otherCar.reached && !reached)
             {
-                Debug.Log("HIT");
+                SessionManager.Instance.State = SessionManager.GameState.Failed;
             }
         }
     }
@@ -83,6 +84,7 @@ public class Car : MonoBehaviour
     public void OnReached()
     {
         reached = true;
+        tick.gameObject.SetActive(true);
         transform.parent = _parkingLot.transform;
         var rot = transform.localRotation.eulerAngles;
         Destroy(splineFollower.spline);
